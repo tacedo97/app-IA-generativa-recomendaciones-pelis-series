@@ -73,7 +73,7 @@
         {% if recommendation %}
         <div class="response">
             <strong>Recomendación:</strong>
-            <p>{{ recommendation }}</p>
+            <p>{{ recommendation | safe }}</p>
         </div>
         {% endif %}
     </div>
