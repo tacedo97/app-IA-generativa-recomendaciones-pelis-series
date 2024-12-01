@@ -10,6 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import utils
 from datetime import datetime
 import pymysql
+import markdown
 
 #Definimos la variable de la aplicación
 app = FastAPI()
@@ -66,7 +67,7 @@ async def get_recommendation(request: Request, user_query: str = Form(...)):
         #Renderizamos la respuesta en el HTML
         return templates.TemplateResponse(
             "index.html", 
-            {"request": request, "recommendation": utils.format_recommendation(recommendation)} #Formateamos la recomendación para convertir los saltos de línea y los textos en negrita en etiquetas HTML
+            {"request": request, "recommendation": markdown.markdown(recommendation)} #Formateamos la recomendación para convertir los saltos de línea y los textos en negrita en etiquetas HTML
         )
     except Exception as e:
         return templates.TemplateResponse(

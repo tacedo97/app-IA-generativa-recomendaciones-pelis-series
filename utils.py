@@ -54,6 +54,3 @@ def insert_query_recommendation(user_query, query_timestamp, recommendation, rec
         popcornai_instance.commit()
     finally:
         popcornai_instance.close() #Cerramos la conexión MySQL, independientemente de que la ingesta de datos hay sido correcta o no
-
-def format_recommendation(recommendation):
-        return markdown.markdown(recommendation)
