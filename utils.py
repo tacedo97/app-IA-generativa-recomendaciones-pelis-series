@@ -1,9 +1,11 @@
 import os
 from dotenv import load_dotenv
+from fastapi import FastAPI, Request, HTTPException, Form
 import cohere #LLM empleado para el desarrollo de la aplicación
 from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate
 import pymysql
+import markdown
 
 #Cargamos las variables de entorno del archivo .env
 load_dotenv()
@@ -34,6 +36,24 @@ def aws_instance_connection():
     popcornai_instance = pymysql.connect(host = "popcornai.crkoiw80araw.eu-west-1.rds.amazonaws.com",
                                         user = "admin",
                                         password = aws_password,
+                                        charset="utf8mb4",
                                         cursorclass = pymysql.cursors.DictCursor
                                         )
-    return popcornai_instance    
+    return popcornai_instance
+
+def insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress):
+    popcornai_instance = aws_instance_connection() #Nos conectamos a las instancia
+    try:
+        cursor = popcornai_instance.cursor()
+        cursor.execute('''USE popcornai_db''')
+        insert_data = '''
+                        INSERT INTO user_query_recommendation (user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                    '''
+        cursor.execute(insert_data, (user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress))
+        popcornai_instance.commit()
+    finally:
+        popcornai_instance.close() #Cerramos la conexión MySQL, independientemente de que la ingesta de datos hay sido correcta o no
+
+def format_recommendation(recommendation):
+        return markdown.markdown(recommendation)
