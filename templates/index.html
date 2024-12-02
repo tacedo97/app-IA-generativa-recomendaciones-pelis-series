@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PopcornAI - Movies & Series Recommendations</title>
+    <title>PopcornAI - Movies & Series Recommendations</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Griffy&display=swap" rel="stylesheet">
     <style>
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-image: url('https://img.freepik.com/foto-gratis/collage-fondo-pelicula_23-2149876026.jpg?t=st=1733097891~exp=1733101491~hmac=81ad6deda9a4489013f0e9bee0d060fe424e26713980dbadfd5d6640868bad60&w=1380'); /* URL de la imagen */
-            background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
-            background-repeat: no-repeat; /* No repite la imagen */
-            background-position: center; /* Centra la imagen */
-            color: white; /* Cambia el color del texto para que sea visible sobre la imagen */
+            background-size: cover; /* Ajustamos la imagen para cubrir toda la pantalla */
+            background-repeat: no-repeat; /* No repetimos la imagen */
+            background-position: center; /* Centramos la imagen */
+            color: rgb(255, 255, 255); 
         }
         .container {
             max-width: 600px;
@@ -25,6 +27,15 @@
             margin-right: auto;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .query { 
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.7); /*Fondo semitransparente*/
+            padding: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+        }
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -34,11 +45,14 @@
         h1 {
             text-align: center;
             color: #ffffff; /*Color del texto del título*/
+            font-family:'Griffy', cursive;
+            ;
         }
         label {
             display: block;
             margin-top: 20px;
             font-weight: bold;
+            color: #ffffff;;
         }
         textarea {
             width: 100%;
@@ -47,7 +61,7 @@
             margin-left: auto;
             margin-right: auto;
             font-size: 16px;
-            border: 1px solid #000000;
+            border: 1px solid #ffffff;
             border-radius: 4px;
         }
         button {
@@ -72,26 +86,66 @@
             border: 1px solid #c8e6c9;
             border-radius: 4px;
         }
+        #loadingMessage {
+            display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            color: rgb(255, 255, 255);
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
+        
         <h1> 🍿🎬📽️ PopcornAI 📽️🎬🍿</h1>
-        <form method="POST" action="/recommendation_ui">
-            <label for="user_query">Hola, soy PopcornAI, ¿qué serie o película te gustaría ver hoy?</label>
-            <textarea id="user_query" name="user_query" placeholder="Quiero ver una serie similar a 'Stranger Things'..."></textarea>
-            <button type="submit">Obtener recomendación</button>
+        
+        <form method="POST" action="/recommendation_ui" onsubmit="prepareForNewRequest();">
+            <label for="user_query">Hi, I'm PopcornAI, which serie or film would you like to watch today?</label>
+            <textarea id="user_query" name="user_query" placeholder="I want to see an action-packed film..."></textarea>
+            <button type="submit">Give me a recommendation</button>
         </form>
-
-        {% if recommendation %}
-        <div class="response">
-            <strong>Recomendación:</strong>
-            <p>{{ recommendation | safe }}</p>
+        
+        <div id="loadingMessage" style="display: none; text-align: center;">
+            <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWx6YzJ1NWVyNWZzNHVscWw4Y2cwbDdlaTA1Y3B5ajd6YjVubHRoZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2XflxzDAw5pn6WaA372/giphy.webp" alt="Loading..." width=200px>
+            <p style="color: white;">⏳Loading⏳... Please wait.</p>
         </div>
+        
+        {% if recommendation %}
+
+            <div id="query_container" class="query" style="display: block;">  
+                <strong>Your query:</strong> 
+                <p>{{ user_query | safe }}</p>  
+            </div>
+
+            <div id="recommendation_container" class="response" style="display: block;">
+                <strong>Recommendation:</strong>
+                <p>{{ recommendation | safe }}</p>
+            </div>
+
+        {% else %}
+        
+            <div id="query_container" class="query" style="display: none;"></div>
+            <div id="recommendation_container" class="response" style="display: none;"></div>
+            <p style="color:white; text-align: center; display: none;" id="error"> No recommendation available yet. Try again later.</p>
+        
         {% endif %}
     </div>
+
     <div class="footer">
-        Imagen de fondo por <a href="https://www.freepik.es/" target="_blank" style="color: #aaa;">www.freepik.es</a>
+        Image from <a href="https://www.freepik.es/" target="_blank" style="color: #aaa;">www.freepik.es</a>
     </div>
+
+    <script>
+  
+        function prepareForNewRequest() {
+            // Ocultar la query y la recomendación previas
+            document.getElementById("query_container").style.display = "none";
+            document.getElementById("recommendation_container").style.display = "none";
+            document.getElementById("error").style.display = "none";  //Para esconder el mensaje de error en la pantalla inicial
+            document.getElementById("loadingMessage").style.display = "block";
+        }
+    </script>
 </body>
 </html>

@@ -51,6 +51,7 @@ async def llm_recommendation(request:Request, user_query:str):
         utils.insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress)
         raise HTTPException(detail="Ha habido un fallo al generar la recomendación:" + str(e))
 
+#Endpoints para HTML
 @app.get("/", response_class=HTMLResponse)
 async def render_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -67,7 +68,7 @@ async def get_recommendation(request: Request, user_query: str = Form(...)):
         #Renderizamos la respuesta en el HTML
         return templates.TemplateResponse(
             "index.html", 
-            {"request": request, "recommendation": markdown.markdown(recommendation)} #Formateamos la recomendación para convertir los saltos de línea y los textos en negrita en etiquetas HTML
+            {"request": request, "user_query": user_query, "recommendation": markdown.markdown(recommendation)} #Formateamos la consulta y la recomendación para convertir los saltos de línea y los textos en negrita en etiquetas HTML
         )
     except Exception as e:
         return templates.TemplateResponse(
@@ -76,7 +77,5 @@ async def get_recommendation(request: Request, user_query: str = Form(...)):
         )
 
 # Ejecutar la aplicación
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
-
-
+#if __name__ == "__main__":
+#    uvicorn.run(app, host="127.0.0.1", port=8000)

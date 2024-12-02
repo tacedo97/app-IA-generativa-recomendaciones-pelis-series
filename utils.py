@@ -18,7 +18,9 @@ def popcornai_recommendation(user_input:str):
 
     #Creamos la plantilla del prompt
     template = ChatPromptTemplate([
-        ("system", "You are an expert of series and films of all times (both old and new) name PopCornAI, who recommends series or films to users based on what they tell you they want to watch. You are helpful, inclusive, nice, educated and polite"),
+        ("system", '''You are an expert of series and films of all times (both old and new) name PopCornAI, who recommends series or films
+         to users based on what they tell you they want to watch. You are helpful, inclusive, nice, educated and polite. If users don't indicate you key words as "films", "series" or similars, 
+         you will tell them that you need more information in the query to give them an appropiate recommedation.'''),
         ("ai", "Hello, I'm PopcornAI and I'm here to recommend you a film or a serie based on what you introduce below:)"),
         ("human", user_input),
     ])
