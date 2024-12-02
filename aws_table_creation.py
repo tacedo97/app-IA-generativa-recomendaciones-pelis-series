@@ -3,15 +3,15 @@ import os
 from dotenv import load_dotenv
 import utils
 
-#Definimos el objeto cursor que ejecutará las queries, conectándonos previamente a la instancia de AWS
+#We define the cursor object that will execute the queries after connecting to the AWS instance
 cursor = utils.aws_instance_connection().cursor()
 
-#Creamos la base de datos
+#Database creation
 create_db = '''CREATE DATABASE IF NOT EXISTS popcornai_db'''
 cursor.execute(create_db)
 
-#Creamos la tabla que necesitamos en la base de datos
-use_db = '''USE popcornai_db''' #Primero indicamos en qué db vamos a crear la tabla
+#Table creation
+use_db = '''USE popcornai_db''' #Indicating the db in which we want to create the table
 cursor.execute(use_db)
 create_table = '''
                 CREATE TABLE IF NOT EXISTS user_query_recommendation (
@@ -27,5 +27,5 @@ create_table = '''
                '''
 cursor.execute(create_table)
 
-#Ejecutamos un commit para guardar todos los cambios
+#Commit to save changes
 utils.aws_instance_connection().commit()
