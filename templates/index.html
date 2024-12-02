@@ -3,25 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PopcornAI - Movie Recommendations</title>
+    <title>PopcornAI - Movies & Series Recommendations</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f9;
+            background-image: url('https://img.freepik.com/foto-gratis/collage-fondo-pelicula_23-2149876026.jpg?t=st=1733097891~exp=1733101491~hmac=81ad6deda9a4489013f0e9bee0d060fe424e26713980dbadfd5d6640868bad60&w=1380'); /* URL de la imagen */
+            background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
+            background-repeat: no-repeat; /* No repite la imagen */
+            background-position: center; /* Centra la imagen */
+            color: white; /* Cambia el color del texto para que sea visible sobre la imagen */
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: #ffffff;
-            padding: 20px;
+            background:rgba(0, 0, 0, 0.7); /*Fondo semitransparente*/
+            padding: 30px;
             border-radius: 8px;
+            margin-left: auto;
+            margin-right: auto;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #ccc;
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #ffffff; /*Color del texto del título*/
         }
         label {
             display: block;
@@ -32,9 +44,10 @@
             width: 100%;
             height: 100px;
             margin-top: 10px;
-            padding: 10px;
+            margin-left: auto;
+            margin-right: auto;
             font-size: 16px;
-            border: 1px solid #ccc;
+            border: 1px solid #000000;
             border-radius: 4px;
         }
         button {
@@ -43,19 +56,19 @@
             margin-top: 20px;
             padding: 10px;
             font-size: 16px;
-            background-color: #5cb85c;
+            background-color: #393939;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #4cae4c;
+            background-color: #3f413f;
         }
         .response {
             margin-top: 20px;
             padding: 10px;
-            background-color: #e8f5e9;
+            background-color:rgba(0, 0, 0, 0.7);
             border: 1px solid #c8e6c9;
             border-radius: 4px;
         }
@@ -63,10 +76,10 @@
 </head>
 <body>
     <div class="container">
-        <h1> 🍿 PopcornAI 🍿</h1>
+        <h1> 🍿🎬📽️ PopcornAI 📽️🎬🍿</h1>
         <form method="POST" action="/recommendation_ui">
             <label for="user_query">Hola, soy PopcornAI, ¿qué serie o película te gustaría ver hoy?</label>
-            <textarea id="user_query" name="user_query" placeholder="Quiero ver una película de terror japonesa..."></textarea>
+            <textarea id="user_query" name="user_query" placeholder="Quiero ver una serie similar a 'Stranger Things'..."></textarea>
             <button type="submit">Obtener recomendación</button>
         </form>
 
@@ -76,6 +89,9 @@
             <p>{{ recommendation | safe }}</p>
         </div>
         {% endif %}
+    </div>
+    <div class="footer">
+        Imagen de fondo por <a href="https://www.freepik.es/" target="_blank" style="color: #aaa;">www.freepik.es</a>
     </div>
 </body>
 </html>
