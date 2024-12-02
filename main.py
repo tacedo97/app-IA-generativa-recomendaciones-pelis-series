@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates #Para renderizar la plantilla HTML
+from fastapi.templating import Jinja2Templates #To render the HTML template
 from pydantic import BaseModel
 import uvicorn
 from transformers import AutoTokenizer, AutoModelForCausalLM
-import cohere #LLM empleado para el desarrollo de la aplicación
+import cohere #LLLM used for the development of the application
 from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate
 import utils
@@ -12,70 +12,35 @@ from datetime import datetime
 import pymysql
 import markdown
 
-#Definimos la variable de la aplicación
+#We define the app variable
 app = FastAPI()
 
-# Configuración de Jinja2 para templates
+#Configuration of Jinja2 for templates
 templates = Jinja2Templates(directory="templates")
 
-#Endpoint inicial que describe el ejercicio
-#@app.get('/')
-#async def hello():
-#    return '''Hola! Bienvenido a la API utilizada para el desarrollo del sistema de recomendación de películas y series'''
-
-#Endpoint que recoge la consulta del usuario
-#@app.post('/ask_recommendation')
-#async def asking_recommendation(user_query:str):
-#    try:
-#        return {"response":f"Consulta del usuario: {user_query}"}
-#    except Exception as e:
-#        raise HTTPException(detail="Ha habido un fallo en el envío de la consulta a PopcornAI:" + str(e))
-
-#Endpoint que devuelve la recomendación en base a la consulta del usuario
-@app.get("/recommendation")
-async def llm_recommendation(request:Request, user_query:str):
-    try:
-        query_timestamp = datetime.now().isoformat() #Variable en la que incluimos la fecha y hora a la que el usuario manda la consulta
-        recommendation = utils.popcornai_recommendation(user_query) #Recomendación generada por el llm
-        recommendation_timestamp = datetime.now().isoformat() #Variable en la que incluimos la fecha y hora a la que el llm manda la recomendación en base a la consulta
-        answer_time = (datetime.fromisoformat(recommendation_timestamp) - datetime.fromisoformat(query_timestamp)).total_seconds() #Tiempo que tarda el llm (en segundos) en responder
-        ip_adress = request.client.host
-        utils.insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress)
-        return recommendation
-    except Exception as e:
-        query_timestamp = datetime.now().isoformat()
-        recommendation = "Ha habido un fallo al generar la recomendación:" + str(e)
-        recommendation_timestamp = datetime.now().isoformat()
-        answer_time = (datetime.fromisoformat(recommendation_timestamp) - datetime.fromisoformat(query_timestamp)).total_seconds() #Tiempo que tarda el llm (en segundos) en responder
-        ip_adress = request.client.host
-        utils.insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress)
-        raise HTTPException(detail="Ha habido un fallo al generar la recomendación:" + str(e))
-
-#Endpoints para HTML
+#Endpoint for the initial visualization of index.html
 @app.get("/", response_class=HTMLResponse)
 async def render_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+#Endpoint in which the user obtains a series/film recommendation of the Cohere llm depending on the sent query
 @app.post("/recommendation_ui", response_class=HTMLResponse)
 async def get_recommendation(request: Request, user_query: str = Form(...)):
+    query_timestamp = datetime.now().isoformat() #Date/Time in which the user sends the query
+    ip_adress = request.client.host 
     try:
-        query_timestamp = datetime.now().isoformat() #Variable en la que incluimos la fecha y hora a la que el usuario manda la consulta
-        recommendation = utils.popcornai_recommendation(user_query) #Recomendación generada por el llm
-        recommendation_timestamp = datetime.now().isoformat() #Variable en la que incluimos la fecha y hora a la que el llm manda la recomendación en base a la consulta
-        answer_time = (datetime.fromisoformat(recommendation_timestamp) - datetime.fromisoformat(query_timestamp)).total_seconds() #Tiempo que tarda el llm (en segundos) en responder
-        ip_adress = request.client.host
-        utils.insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress)
-        #Renderizamos la respuesta en el HTML
+        recommendation = utils.popcornai_recommendation(user_query) #Recommendation of the llm
+        recommendation_timestamp = datetime.now().isoformat() #Date/Time in which the llm sends the recommendation to the user
+        answer_time = (datetime.fromisoformat(recommendation_timestamp) - datetime.fromisoformat(query_timestamp)).total_seconds() #Time taken by the llm (in seconds) to give a recommendation
+        utils.insert_query_recommendation(user_query, query_timestamp, recommendation, recommendation_timestamp, answer_time, ip_adress) #Inserting the information in the cloud database
+        #We render the response in index.html
         return templates.TemplateResponse(
             "index.html", 
-            {"request": request, "user_query": user_query, "recommendation": markdown.markdown(recommendation)} #Formateamos la consulta y la recomendación para convertir los saltos de línea y los textos en negrita en etiquetas HTML
-        )
+            {"request": request, "user_query": user_query, "recommendation": markdown.markdown(recommendation)} 
+            ) #We formatted the recommendation to convert line breaks and bold text into HTML tags
     except Exception as e:
+        utils.insert_query_recommendation(user_query, query_timestamp, str(e), query_timestamp, 0, ip_adress) #Inserting the information in the cloud database
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "recommendation": f"Hubo un error: {str(e)}"}
+            {"request": request, "recommendation": f"An error has occurred: {str(e)}"}
         )
-
-# Ejecutar la aplicación
-#if __name__ == "__main__":
-#    uvicorn.run(app, host="127.0.0.1", port=8000)
