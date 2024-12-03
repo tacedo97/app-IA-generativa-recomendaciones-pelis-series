@@ -68,7 +68,7 @@ To run the automated tests, execute this in your terminal:
 pytest test_api.py
 ```
 
-## 🛠️ Structure of the Proyect
+## 🛠️ Structure of the Project
 The repository is organised as follows:
 
 ```
